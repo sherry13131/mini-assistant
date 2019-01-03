@@ -18,6 +18,9 @@ LiquidCrystal lcd(1, 2, 3, 4, 5, 6); // Creates an LC object. Parameters: (rs, e
 dht DHT;
 int state = -1; // 0:main menu; 1:temp&humd; 2:psr game
 int choice = 0; // for psr game
+int pcChoice = 0; // for psr game (pc)
+int psrState = 0; // 0:end; 1:win; -1:lost;
+
 time_t t;
 int tempBtnState = 0; // also, paper
 int gameBtnState = 0; // also, scissor
@@ -27,6 +30,7 @@ void setup() {
  lcd.begin(16,2); // Initializes the interface to the LCD screen, and specifies the dimensions (width and height) of the display } 
 // Serial.begin(9600);
  setTime(23,33,0,1,1,2019);
+ randomSeed(analogRead(0));
 }
 
 void loop() {
@@ -81,7 +85,7 @@ void loop() {
    lcd.print("Temp: ");
    lcd.print(DHT.temperature);
    lcd.setCursor(0,1);
-   lcd.print("humd: ");
+   lcd.print("Humidity: ");
    lcd.print(DHT.humidity);
    delay(2000);
   }
@@ -89,7 +93,29 @@ void loop() {
    lcd.clear();
  }
 
+//rock paper scissor game
  if (state == 2) {
+  while(!psrState) {
+    psrState = 0;
+    // play again
+    psrGame();
+  }
+  psrState = 0;
+ }
+ 
+}
+
+void psrGame() {
+  psrGameMessage();
+  choice = psrUserInput();
+  pcChoice = psrPcChoice();
+  psrShowChoices();
+  psrState = psrResult();
+  psrResultMessage();
+  psrResetVars();
+}
+
+void psrGameMessage() {
   lcd.setCursor(0,0);
   lcd.print("Let's play paper");
   lcd.setCursor(0,1);
@@ -104,32 +130,47 @@ void loop() {
   delay(1000);
   lcd.print("2!");
   delay(1000);
+}
+
+int psrUserInput() {
   while (!choice) {
   int buttonState = digitalRead(temp_PIN);
   int buttonState2 = digitalRead(game_PIN);
   int buttonState3 = digitalRead(dummy_PIN);
     if (buttonState != tempBtnState) {
       if (buttonState == HIGH) {
-        choice = 1;
+        return 1;
       }
     }
     if (buttonState2 != gameBtnState) {
       if (buttonState2 == HIGH) {
-        choice = 2;
+        return 2;
       }
     }
     if (buttonState3 != dummyBtnState) {
       if (buttonState3 == HIGH) {
-        choice = 3;
+        return 3;
       }
     }
   }
+}
+
+void psrShowChoices() {
   lcd.print("1!");
   delay(500);
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("You: ");
-  switch (choice) {
+  psrInputType(choice);
+  lcd.setCursor(0,1);
+  lcd.print("Me: ");
+  psrInputType(pcChoice);
+  delay(2000);
+  lcd.clear();
+}
+
+void psrInputType(int c) {
+  switch (c) {
     case 1:
       lcd.print("paper");
       break;
@@ -142,9 +183,43 @@ void loop() {
     default:
       break;
   }
+}
+
+int psrPcChoice() {
+  long randNumber;
+  randNumber = random(100);
+  return randNumber % 3 + 1;
+}
+
+int psrResult() {
+  if (choice == pcChoice) {
+    return 0;
+  } else if (((choice == 1) && (pcChoice == 3)) || ((choice == 2) && (pcChoice == 1)) || ((choice == 3) && (pcChoice == 2))) {
+    return 1;
+  }
+  return -1;
+}
+
+void psrResultMessage() {
+  lcd.setCursor(0,0);
+  switch(psrState) {
+    case -1:
+      lcd.print("You lose T.T");
+      break;
+    case 1:
+      lcd.print("You win >w<");
+      break;
+    case 0:
+      lcd.print("Tie...");
+      lcd.print("So again...");
+      break;
+  }
   delay(2000);
+}
+
+void psrResetVars() {
   choice = 0;
+  pcChoice = 0;
   state = 0;
- }
- 
+  lcd.clear();
 }
