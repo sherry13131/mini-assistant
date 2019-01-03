@@ -1,11 +1,3 @@
-/*
-* Arduino LCD Tutorial
-*
-* Crated by Dejan Nedelkovski,
-* www.HowToMechatronics.com
-*
-*/
-
 #include <dht.h>
 #include <TimeLib.h>
 #include <LiquidCrystal.h> // includes the LiquidCrystal Library 
