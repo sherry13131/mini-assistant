@@ -17,10 +17,11 @@ LiquidCrystal lcd(1, 2, 3, 4, 5, 6); // Creates an LC object. Parameters: (rs, e
 
 dht DHT;
 int state = -1; // 0:main menu; 1:temp&humd; 2:psr game
+int choice = 0; // for psr game
 time_t t;
-int tempBtnState = 0;
-int gameBtnState = 0;
-int dummyBtnState = 0;
+int tempBtnState = 0; // also, paper
+int gameBtnState = 0; // also, scissor
+int dummyBtnState = 0; // also, rock
 
 void setup() { 
  lcd.begin(16,2); // Initializes the interface to the LCD screen, and specifies the dimensions (width and height) of the display } 
@@ -55,9 +56,17 @@ void loop() {
   lcd.print(":");
   lcd.print(second(t));
   int buttonState = digitalRead(temp_PIN);
+  int buttonState2 = digitalRead(game_PIN);
   if (buttonState != tempBtnState) {
     if (buttonState == HIGH) {
       state = 1;
+      lcd.clear();
+    }
+    delay(100);
+  }
+  if (buttonState2 != gameBtnState) {
+    if (buttonState2 == HIGH) {
+      state = 2;
       lcd.clear();
     }
     delay(100);
@@ -79,4 +88,63 @@ void loop() {
    state = 0;
    lcd.clear();
  }
+
+ if (state == 2) {
+  lcd.setCursor(0,0);
+  lcd.print("Let's play paper");
+  lcd.setCursor(0,1);
+  lcd.print("scissor rock!");
+  delay(2000);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Let's start xD");
+  delay(1000);
+  lcd.setCursor(0,1);
+  lcd.print("3!");
+  delay(1000);
+  lcd.print("2!");
+  delay(1000);
+  while (!choice) {
+  int buttonState = digitalRead(temp_PIN);
+  int buttonState2 = digitalRead(game_PIN);
+  int buttonState3 = digitalRead(dummy_PIN);
+    if (buttonState != tempBtnState) {
+      if (buttonState == HIGH) {
+        choice = 1;
+      }
+    }
+    if (buttonState2 != gameBtnState) {
+      if (buttonState2 == HIGH) {
+        choice = 2;
+      }
+    }
+    if (buttonState3 != dummyBtnState) {
+      if (buttonState3 == HIGH) {
+        choice = 3;
+      }
+    }
+  }
+  lcd.print("1!");
+  delay(500);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("You: ");
+  switch (choice) {
+    case 1:
+      lcd.print("paper");
+      break;
+    case 2:
+      lcd.print("scissor");
+      break;
+    case 3:
+      lcd.print("rock");
+      break;
+    default:
+      break;
+  }
+  delay(2000);
+  choice = 0;
+  state = 0;
+ }
+ 
 }
