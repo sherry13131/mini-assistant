@@ -1,7 +1,7 @@
 #include <dht.h>
 #include <TimeLib.h>
-#include <LiquidCrystal.h> // includes the LiquidCrystal Library 
-LiquidCrystal lcd(1, 2, 3, 4, 5, 6); // Creates an LC object. Parameters: (rs, enable, d4, d5, d6, d7) 
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(1, 2, 3, 4, 5, 6); // Parameters: (rs, enable, d4, d5, d6, d7) 
 #define DHT11_PIN 7
 #define temp_PIN 8
 #define game_PIN 9
@@ -19,9 +19,8 @@ int gameBtnState = 0; // also, scissor
 int dummyBtnState = 0; // also, rock
 
 void setup() { 
- lcd.begin(16,2); // Initializes the interface to the LCD screen, and specifies the dimensions (width and height) of the display } 
-// Serial.begin(9600);
- setTime(23,33,0,1,1,2019);
+ lcd.begin(16,2); // Initializes the interface to the LCD screen
+ setTime(23,33,0,1,1,2019); // set time for now since I don't have a rtc component yet... T.T
  randomSeed(analogRead(0));
 }
 
@@ -96,6 +95,9 @@ void loop() {
  }
  
 }
+
+
+/* --- helper functions ---------------------------*/
 
 void psrGame() {
   psrGameMessage();
