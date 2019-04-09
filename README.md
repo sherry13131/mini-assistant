@@ -1,4 +1,4 @@
-# mini-assitant
+# mini-assistant
 A mini lcd that shows you some useful information and have fun!
 
 ## Hardware
